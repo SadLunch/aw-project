@@ -2,7 +2,7 @@
 To maintain modularity and flexibility in the application's front-end architecture
 ## Decision Drivers
 * Provide overall structure and layout of the application
-* Enable independent updates to the shell component with affecting other parts of the application
+* Enable independent updates to the shell component without affecting other parts of the application
 ## Considered Options
 1. Establish a shell component as each individual screen's background
 2. Create a separate microfrontend for the shell component

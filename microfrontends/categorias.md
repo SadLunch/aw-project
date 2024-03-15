@@ -2,7 +2,7 @@
 To maintain modularity and flexibility in the application's front-end architecture
 ## Decision Drivers
 * Divide the overall system into logical building blocks
-* Enable independent updates to the categories component with affecting other parts of the application
+* Enable independent updates to the categories component without affecting other parts of the application
 ## Considered Options
 1. Include a categories component within the shops' location screen
 2. Create a separate microfrontend for the categories component

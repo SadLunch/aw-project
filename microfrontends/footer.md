@@ -2,7 +2,7 @@
 To maintain modularity and flexibility in the application's front-end architecture
 ## Decision Drivers
 * Ensure consistent navigation across all screens
-* Enable independent updates to the footer component with affecting other parts of the application
+* Enable independent updates to the footer component without affecting other parts of the application
 ## Considered Options
 1. Include a footer component within each individual navigable screen
 2. Create a separate microfrontend for the footer component
