@@ -4,7 +4,7 @@ To maintain modularity and flexibility in the application's front-end architectu
 * Divide the overall system into logical building blocks
 * Enable independent updates to the categories component without affecting other parts of the application
 ## Considered Options
-1. Include a categories component within the shops' location screen
+1. Include a categories component within the shops location screen
 2. Create a separate microfrontend for the categories component
 ## Decision Outcome
 We decided to implement a separate microfrontend for the categories component 
