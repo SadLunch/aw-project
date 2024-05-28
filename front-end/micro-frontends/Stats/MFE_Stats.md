@@ -18,4 +18,4 @@ Bad:
 * Doesn't enable independent updates of the component
 * Doesn't enable teams to work in paralell on different microfrontends
 ## More Information
-* The positive statistics microfrontend consists of components that help users see the positive statistics of the butchery shop
+* The statistics microfrontend consists of components that help users see the positive and negative statistics of the butchery shop
