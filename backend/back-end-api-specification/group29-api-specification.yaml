@@ -1,0 +1,1233 @@
+openapi: 3.0.3
+info:
+  title: QRMeat v1
+  description: >-
+   API Specification for Web Applications course.
+   
+
+   Group 29:
+
+     - Frederico Silva nº63039
+     - Ricardo Mateus nº54931
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://grupo29.swagger.io/api/v3
+tags:
+  - name: Authentication
+    description: Authentication related operations
+  - name: Account
+    description: User account related operations
+  - name: Product
+    description: Product related operations
+  - name: Feedback
+    description: Product feedback related operations
+  - name: News
+    description: News related operations
+  - name: Stats
+    description: Stats related operations
+  - name: Store
+    description: Store related operations
+  - name: QRCode
+    description: QR Code related operations
+paths:
+  /auth/token:
+    get:
+      tags:
+        - Authentication
+      summary: GET the logged user's token
+      description: >-
+        Get the logged user's token.
+        Useful for operations restricted to authenticated users
+      operationId: getAuthToken
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+        '404':
+          description: Authentication Token not found
+  /auth/login:
+    put:
+      tags:
+        - Authentication
+      summary: Log user in
+      description: >-
+        Logs user in using the provided credentials.
+      operationId: userLogin
+      parameters:
+        - name: username
+          in: query
+          description: Username used to login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: Password used to login
+          required: true
+          schema:
+            type: string
+            format: password
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password provided
+  /auth/logout:
+    delete:
+      tags:
+        - Authentication
+      summary: Log user out of session
+      description: >-
+        Logs user out of his current session. Deletes the user's session token
+      operationId: userLogout
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: No session open for current user
+  /users/{user_id}:
+    get:
+      tags:
+        - Account
+      summary: Find user by it's ID
+      description: Returns a single user
+      operationId: getUserbyID
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of user to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - Account
+      summary: Updates a user with form data
+      description: >-
+        Updates a user with form data
+      operationId: updateUser
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of user that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid ID supplied
+    delete:
+      tags:
+        - Account
+      summary: Deletes a user
+      description: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of the user to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid user ID
+  /users:
+    put:
+      tags:
+        - Account
+      summary: Register a new user
+      description: ''
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid user data
+  /products:
+    get:
+      tags:
+        - Product
+      summary: Returns all products
+      description: Returns a list of all products in the application
+      operationId: getProducts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '204':
+          description: No products available
+    put:
+      tags:
+        - Product
+      summary: Inserts a new product
+      description: Inserts a new product into the apllication
+      operationId: createProduct
+      requestBody:
+        description: Create a new product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid product data
+  /products/{product_id}:
+    get:
+      tags:
+        - Product
+      summary: Find product by it's ID
+      description: Return a single product
+      operationId: getProduct
+      parameters:
+        - name: product_id
+          in: path
+          description: Id of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - Product
+      summary: Updates a product
+      description: Updated a product with form data
+      operationId: updateProduct
+      parameters:
+        - name: product_id
+          in: path
+          description: Id of product to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Product data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid product data supplied
+        '404':
+          description: Invalid ID supplied
+    delete:
+      tags:
+        - Product
+      summary: Deletes a product
+      description: Deletes a specific product
+      operationId: deleteProduct
+      parameters:
+        - name: product_id
+          in: path
+          description: Id of the product
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Successful Operation
+        '404':
+          description: Invalid ID supplied
+  /products/saved:
+    get:
+      tags:
+        - Product
+      summary: Get all saved products
+      description: Get all the products the user saved
+      operationId: getSavedProducts
+      parameters:
+        - name: token
+          in: query
+          description: Token necessary to get all the user's saved products
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: No saved products found
+    put:
+      tags:
+        - Product
+      summary: Save a product
+      description: Save a product
+      operationId: saveProduct
+      parameters:
+        - name: token
+          in: query
+          description: Token necessary to get all the user's saved products
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid token supplied
+  /products/saved/{product_id}:
+    delete:
+      tags:
+        - Product
+      summary: Delete a saved product
+      description: Unsave a product by it's ID
+      operationId: deleteSavedProduct
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product to be unsaved
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to delete a saved product
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: Invalid ID supplied
+  /reviews/{product_id}:
+    get:
+      tags:
+        - Feedback
+      summary: Get reviews of a product
+      description: Get all reviews of a product
+      operationId: getProductReviews
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to get the product's reviews
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewList'
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - Feedback
+      summary: Add a review to a product
+      description: Add a review rating to an existing product
+      operationId: giveReview
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to add review rating to product
+          required: true
+          schema:
+            type: string
+        - name: rating
+          in: query
+          description: Rating to be given to the product
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: Invalid ID supplied
+    delete:
+      tags:
+        - Feedback
+      summary: Delete a review
+      description: Delete a review from a product
+      operationId: deleteProductReviews
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to delete review from product
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: Invalid ID supplied
+  /reviews/{product_id}/{review_id}:
+    get:
+      tags:
+        - Feedback
+      summary: Get a specific review
+      description: Get a specific review from a product
+      operationId: getProductReview
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: review_id
+          in: path
+          description: ID of review
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to get the review from product
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - Feedback
+      summary: Update a specific review
+      description: Update a specific review from a product
+      operationId: updateReview
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: review_id
+          in: path
+          description: ID of review
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to update review from product
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Review data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid token/Review data supplied
+        '404':
+          description: Invalid ID supplied
+    delete:
+      tags:
+        - Feedback
+      summary: Delete a specific review
+      description: Delete a specific review from a product
+      operationId: deleteProductReview
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: review_id
+          in: path
+          description: ID of review
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: token
+          in: query
+          description: Token necessary to delete review from product
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid token supplied
+        '404':
+          description: Invalid ID supplied
+  /news:
+    get:
+      tags:
+        - News
+      summary: Get all news
+      description: Get all news
+      operationId: getAllNews
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsList'
+        '404':
+          description: No News found
+    put:
+      tags:
+        - News
+      summary: Add a new news
+      description: Add a new news
+      operationId: createNews
+      requestBody:
+        description: News data to be inserted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/News'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid news data supplied
+    delete:
+      tags:
+        - News
+      summary: Delete all news
+      description: Delete all news articles
+      operationId: deleteAllNews
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: No news found
+  /news/{news_id}:
+    get:
+      tags:
+        - News
+      summary: Get a news article
+      description: Get a news article
+      operationId: getNewsArticle
+      parameters:
+        - name: news_id
+          in: path
+          description: ID of News article
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '404':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - News
+      summary: Update existing news article
+      description: Update existing news article
+      operationId: updateNewsArticle
+      parameters:
+        - name: news_id
+          in: path
+          description: ID of News article
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: News data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/News'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid news data supplied
+        '404':
+          description: Inavlid ID supplied
+    delete:
+      tags:
+        - News
+      summary: Delete a news article
+      description: Delete a news article
+      operationId: deleteNewsArticle
+      parameters:
+        - name: news_id
+          in: path
+          description: ID of News article
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: Invalid ID supplied
+  /stats/negative:
+    get:
+      tags:
+        - Stats
+      summary: Get negative stats
+      description: Get negative stats
+      operationId: getNegativeStats
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+        '404':
+          description: No Negative stats found
+    put:
+      tags:
+        - Stats
+      summary: Add negative stats
+      description: Add negative stats
+      operationId: addNegativeStats
+      requestBody:
+        description: Stats data to be inserted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Stats'
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid negative stats data supplied
+    delete:
+      tags:
+        - Stats
+      summary: Delete all negative stats
+      description: Delete all negative stats
+      operationId: deleteAllNegativeStats
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: No negative stats found
+  /stats/positive:
+    get:
+      tags:
+        - Stats
+      summary: Get positive stats
+      description: Get positive stats
+      operationId: getPositiveStats
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+        '404':
+          description: No positive stats found
+    put:
+      tags:
+        - Stats
+      summary: Add positive stats
+      description: Add positive stats
+      operationId: addPositiveStats
+      requestBody:
+        description: Stats data to be inserted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Stats'
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid positive stats data supplied
+    delete:
+      tags:
+        - Stats
+      summary: Delete all positive stats
+      description: Delete all positive stats
+      operationId: deleteAllPositiveStats
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: No positive stats found
+  /stores:
+    get:
+      tags:
+        - Store
+      summary: Get all stores
+      description: ''
+      operationId: getStores
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreList'
+        '404':
+          description: No stores found
+    put:
+      tags:
+        - Store
+      summary: Add a new store
+      description: ''
+      operationId: addStore
+      requestBody:
+        description: Store data to be inserted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Store'
+      responses:
+        '200':
+          description: Successfull operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Inavlid Store data supplied
+  /stores/{store_id}:
+    get:
+      tags:
+        - Store
+      summary: Get a specific store
+      description: ''
+      operationId: getStore
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Store'
+        '404':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - Store
+      summary: Update a specific store
+      description: ''
+      operationId: updateStore
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Store data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Store'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid Store data supplied
+        '404':
+          description: Invalid ID supplied
+    delete:
+      tags:
+        - Store
+      summary: delete a specific store
+      description: ''
+      operationId: deleteStore
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: successful operation
+        '404':
+          description: Invalid ID supplied
+  /stores/{store_id}/categories:
+    get:
+      tags:
+        - Store
+      summary: Get all categories from a store
+      description: ''
+      operationId: getStoreCategories
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        '404':
+          description: Invalid ID supplied
+    put:
+      tags:
+        - Store
+      summary: Add a new category to a store
+      description: ''
+      operationId: addCategory
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Category data to be inserted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Invalid Category data supplied
+        '404':
+          description: Invalid ID supplied
+    delete:
+      tags:
+        - Store
+      summary: Delete all categories from a store
+      description: ''
+      operationId: deleteStoreCategories
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: successful operation
+        '404':
+          description: Invalid ID supplied
+  /stores/{store_id}/categories/{category_id}:
+    delete:
+      tags:
+        - Store
+      summary: Delete a category from a store
+      description: ''
+      operationId: deleteStoreCategory
+      parameters:
+        - name: store_id
+          in: path
+          description: ID of store
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: category_id
+          in: path
+          description: ID of category
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: successful operation
+        '404':
+          description: Invalid ID supplied
+  /qrCode:
+    get:
+      tags:
+        - QRCode
+      summary: Read QR code
+      description: Read QR code to then show the product it refers to
+      operationId: readQRCode
+      parameters:
+        - name: qr_code
+          in: query
+          description: The QR code to be read
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid QR code supplied
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: theUser
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          format: password
+          example: '12345'
+    Product:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          format: int64
+          description: ID of the product
+          example: 10
+        name:
+          type: string
+          description: Name of the product
+          example: Vitela
+        price:
+          type: number
+          format: float
+          description: Price of the product
+          example: 12.99
+        details_producer:
+          type: string
+          description: Name of the producer
+          example: José
+        details_origin:
+          type: string
+          description: Origin of the product
+          example: Alentejo
+        details_gender:
+          type: string
+          description: Gender of the product
+          enum:
+            - Macho
+            - Femea
+          example: Femea
+        details_age:
+          type: integer
+          format: int32
+          description: Age of the product
+          example: 4
+        details_race:
+          type: string
+          description: Race of the product
+          example: Alentejano
+        more_details:
+          type: string
+    ProductList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+    Review:
+      type: object
+      properties:
+        review_id:
+          type: integer
+          format: int64
+          description: ID of the review
+          example: 12
+        product_id:
+          type: integer
+          format: int64
+          description: ID of the product
+          example: 10
+        rating:
+          type: integer
+          format: int32
+          description: Rating of the product
+          example: 4
+    ReviewList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Review'
+    News:
+      type: object
+      properties:
+        news_id:
+          type: integer
+          format: int64
+          description: ID of the news article
+          example: 437
+        title:
+          type: string
+          description: News article title
+          example: News title
+        description:
+          type: string
+          description: Description of the news article
+          example: >-
+            Lorem Ipsum Dolor Lorem Ipsum Dolor Lorem Ipsum Dolor Lorem Ipsum Dolor
+        photo:
+          type: string
+          description: News article photo path
+          example: /path/to/photo.png
+        date:
+          type: string
+          format: date-time
+          description: Date and time the news article was published
+          example: 2024-05-27T23:20:50.52Z
+    NewsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/News'
+    Stats:
+      type: object
+      properties:
+        start_year:
+          type: integer
+          format: int32
+          description: Start year of the stats
+          example: 2023
+        end_year:
+          type: integer
+          format: int32
+          description: End year of the stats
+          example: 2024
+        logging_stat:
+          type: integer
+          format: int32
+          description: Number in percentage of the logging stat
+          example: 45
+        images_stats:
+          type: array
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: Path of the photo of the stats
+                example: /path/to/photo.png
+    Store:
+      type: object
+      properties:
+        store_id:
+          type: integer
+          format: int64
+          description: ID of the store
+          example: 2
+        store_name:
+          type: string
+          description: Name of the store
+          example: Store 1
+        store_location:
+          type: string
+          description: Location of the store
+          example: Location 1
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    StoreList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Store'
+    Category:
+      type: object
+      properties:
+        category_id:
+          type: integer
+          format: int64
+          description: ID of the category
+          example: 1
+        category_name:
+          type: string
+          description: Name of the category
+          example: Category 1
+        category_photo:
+          type: string
+          description: Path of the category's photo
+          example: /path/to/photo.png
+    CategoryList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Category'
